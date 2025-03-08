@@ -22,7 +22,7 @@
    ⚠️ **This is a fork of ai-shell-mistral by Builder.io.**  
    This project includes modifications for using Mistral  
 
-   Original project: [Builder.io’s ai-shell-mistral](https://github.com/BuilderIO/ai-shell)  
+   Original project: [Builder.io’s ai-shell](https://github.com/BuilderIO/ai-shell)  
 
    Inspired by the <a href="https://githubnext.com/projects/copilot-cli">GitHub Copilot X CLI</a>, but open source for everyone.
 </p>
@@ -38,7 +38,7 @@
 1. Install _ai shell_:
 
    ```sh
-   npm install -g @builder.io/ai-shell
+   npm install -g @aslepenkov/ai-shell-mistral
    ```
 
 2. Retrieve your API key from [Mistral](https://console.mistral.ai/api-keys)
@@ -196,7 +196,7 @@ ai --version
 If it's not the [latest version](https://github.com/BuilderIO/ai-shell/tags), run:
 
 ```bash
-npm update -g @builder.io/ai-shell
+npm update -g @aslepenkov/ai-shell-mistral
 ```
 
 Or just use AI shell:
