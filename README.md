@@ -17,6 +17,13 @@
 <p>
 
 <p align="center">
+   # ai-shell-mistral-fork
+
+   ⚠️ **This is a fork of ai-shell-mistral by Builder.io.**  
+   This project includes modifications for using Mistral  
+
+   Original project: [Builder.io’s ai-shell-mistral](https://github.com/BuilderIO/ai-shell)  
+
    Inspired by the <a href="https://githubnext.com/projects/copilot-cli">GitHub Copilot X CLI</a>, but open source for everyone.
 </p>
 
