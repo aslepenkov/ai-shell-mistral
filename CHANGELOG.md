@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Move to Mistral API
+
 ## 1.0.12
 
 - Bug fixes

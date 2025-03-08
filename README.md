@@ -34,14 +34,14 @@
    npm install -g @builder.io/ai-shell
    ```
 
-2. Retrieve your API key from [OpenAI](https://platform.openai.com/account/api-keys)
+2. Retrieve your API key from [Mistral](https://console.mistral.ai/api-keys)
 
    > Note: If you haven't already, you'll have to create an account and set up billing.
 
 3. Set the key so ai-shell can use it:
 
    ```sh
-   ai config set OPENAI_KEY=<your token>
+   ai config set MISTRAL_KEY=<your token>
    ```
 
    This will create a `.ai-shell` file in your home directory.
@@ -127,13 +127,6 @@ or save the option as a preference using this command:
 ai config set SILENT_MODE=true
 ```
 
-### Custom API endpoint
-
-You can custom OpenAI API endpoint to set OPENAI_API_ENDPOINT（default: `https://api.openai.com/v1`）
-
-```sh
-ai config set OPENAI_API_ENDPOINT=<your proxy endpoint>
-```
 
 ### Set Language
 
@@ -178,10 +171,8 @@ To get an interactive UI like below:
 
 ```bash
 ◆  Set config:
-│  ○ OpenAI Key
-│  ○ OpenAI API Endpoint
+│  ○ Mistral Key
 │  ○ Silent Mode
-│  ● Model (gpt-4o-mini)
 │  ○ Language
 │  ○ Cancel
 └
@@ -208,12 +199,6 @@ ai update
 ```
 
 ## Common Issues
-
-### 429 error
-
-Some users are reporting a 429 from OpenAI. This is due to incorrect billing setup or excessive quota usage. Please follow [this guide](https://help.openai.com/en/articles/6891831-error-code-429-you-exceeded-your-current-quota-please-check-your-plan-and-billing-details) to fix it.
-
-You can activate billing at [this link](https://platform.openai.com/account/billing/overview). Make sure to add a payment method if not under an active grant from OpenAI.
 
 ## Motivation
 

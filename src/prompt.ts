@@ -102,9 +102,8 @@ export async function prompt({
   silentMode,
 }: { usePrompt?: string; silentMode?: boolean } = {}) {
   const {
-    OPENAI_KEY: key,
+    MISTRAL_KEY: key,
     SILENT_MODE,
-    OPENAI_API_ENDPOINT: apiEndpoint,
     MODEL: model,
   } = await getConfig();
   const skipCommandExplanation = silentMode || SILENT_MODE;
@@ -119,7 +118,6 @@ export async function prompt({
     prompt: thePrompt,
     key,
     model,
-    apiEndpoint,
   });
   spin.stop(`${i18n.t('Your script')}:`);
   console.log('');
@@ -135,7 +133,6 @@ export async function prompt({
         script,
         key,
         model,
-        apiEndpoint,
       });
       spin.stop(`${i18n.t('Explanation')}:`);
       console.log('');
@@ -146,14 +143,13 @@ export async function prompt({
     }
   }
 
-  await runOrReviseFlow(script, key, model, apiEndpoint, silentMode);
+  await runOrReviseFlow(script, key, model, silentMode);
 }
 
 async function runOrReviseFlow(
   script: string,
   key: string,
   model: string,
-  apiEndpoint: string,
   silentMode?: boolean
 ) {
   const emptyScript = script.trim() === '';
@@ -166,32 +162,32 @@ async function runOrReviseFlow(
       ...(emptyScript
         ? []
         : [
-            {
-              label: '✅ ' + i18n.t('Yes'),
-              hint: i18n.t('Lets go!'),
-              value: async () => {
-                await runScript(script);
-              },
+          {
+            label: '✅ ' + i18n.t('Yes'),
+            hint: i18n.t('Lets go!'),
+            value: async () => {
+              await runScript(script);
             },
-            {
-              label: '📝 ' + i18n.t('Edit'),
-              hint: i18n.t('Make some adjustments before running'),
-              value: async () => {
-                const newScript = await p.text({
-                  message: i18n.t('you can edit script here:'),
-                  initialValue: script,
-                });
-                if (!p.isCancel(newScript)) {
-                  await runScript(newScript);
-                }
-              },
+          },
+          {
+            label: '📝 ' + i18n.t('Edit'),
+            hint: i18n.t('Make some adjustments before running'),
+            value: async () => {
+              const newScript = await p.text({
+                message: i18n.t('you can edit script here:'),
+                initialValue: script,
+              });
+              if (!p.isCancel(newScript)) {
+                await runScript(newScript);
+              }
             },
-          ]),
+          },
+        ]),
       {
         label: '🔁 ' + i18n.t('Revise'),
         hint: i18n.t('Give feedback via prompt and get a new result'),
         value: async () => {
-          await revisionFlow(script, key, model, apiEndpoint, silentMode);
+          await revisionFlow(script, key, model, silentMode);
         },
       },
       {
@@ -222,7 +218,6 @@ async function revisionFlow(
   currentScript: string,
   key: string,
   model: string,
-  apiEndpoint: string,
   silentMode?: boolean
 ) {
   const revision = await promptForRevision();
@@ -233,7 +228,6 @@ async function revisionFlow(
     code: currentScript,
     key,
     model,
-    apiEndpoint,
   });
   spin.stop(`${i18n.t(`Your new script`)}:`);
 
@@ -250,7 +244,6 @@ async function revisionFlow(
       script,
       key,
       model,
-      apiEndpoint,
     });
 
     infoSpin.stop(`${i18n.t('Explanation')}:`);
@@ -261,7 +254,7 @@ async function revisionFlow(
     console.log(dim('•'));
   }
 
-  await runOrReviseFlow(script, key, model, apiEndpoint, silentMode);
+  await runOrReviseFlow(script, key, model, silentMode);
 }
 
 export const parseAssert = (name: string, condition: any, message: string) => {

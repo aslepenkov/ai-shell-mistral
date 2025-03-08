@@ -1,13 +1,19 @@
-import { IncomingMessage } from 'http'; 
-
-export async function* fakeStreamFromCompletion(completion: any) {
-  const content = completion.choices[0].message.content;
-  for (const chunk of content.split('\n\n')) {
-    yield `data: ${chunk}`;
-  }
-  yield 'data: [DONE]';
+export async function* streamToIterable(completion: any) {
+  yield `data: ${completion.choices[0].message.content}`;
 }
 
+// export async function* streamToIterable(completion: any) {
+//   const content = completion.choices[0].message.content;
+
+//   // Simulate the structure of streamed responses
+//   const payloads = content.split('\n\n').map((chunk) => `data: ${chunk}`);
+
+//   for (const payload of payloads) {
+//     yield payload;
+//   }
+
+//   yield 'data: [DONE]';
+// }
 // export async function* fakeStreamFromCompletion(completion: any) {
 //   let previous = '';
 //   for await (const chunk of resolvedStream) {

@@ -28,8 +28,7 @@ cli(
   },
   (argv) => {
     const silentMode = argv.flags.silent;
-    const promptText = argv._.join(' ');
-
+    let promptText = argv._.join(' ');
     if (promptText.trim() === 'update') {
       update.callback?.(argv);
     } else {

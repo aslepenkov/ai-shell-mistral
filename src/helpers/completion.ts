@@ -1,17 +1,9 @@
-import {
-  OpenAIApi,
-  Configuration,
-  ChatCompletionRequestMessage,
-  Model,
-} from 'openai';
 import { Mistral } from "@mistralai/mistralai";
-import { Readable } from "stream";
-
-
+import { ChatCompletionRequest } from "@mistralai/mistralai/models/components";
 import dedent from 'dedent';
 import { IncomingMessage } from 'http';
 import { KnownError } from './error';
-import { fakeStreamFromCompletion } from './event-stream-to-iterable';
+import { streamToIterable } from './event-stream-to-iterable';
 import { detectShell } from './os-detect';
 import type { AxiosError } from 'axios';
 import { streamToString } from './stream-to-string';
@@ -22,33 +14,24 @@ import readline from 'readline';
 
 const explainInSecondRequest = true;
 
-function getOpenAi(key: string, apiEndpoint: string) {
-  const openAi = new OpenAIApi(
-    new Configuration({ apiKey: key, basePath: apiEndpoint })
-  );
-  return openAi;
-}
-
 function getMistralClient(key: string) {
   return new Mistral({
     apiKey: key,
   });
 }
 
-// Openai outputs markdown format for code blocks. It oftne uses
+// outputs markdown format for code blocks. It oftne uses
 // a github style like: "```bash"
-const shellCodeExclusions = [/```[a-zA-Z]*\n/gi, /```[a-zA-Z]*/gi, '\n'];
+const shellCodeExclusions = [/```[a-zA-Z]*\n/gi, /```/g, '\n'];
 
 export async function getScriptAndInfo({
   prompt,
   key,
   model,
-  apiEndpoint,
 }: {
   prompt: string;
   key: string;
   model?: string;
-  apiEndpoint: string;
 }) {
   const fullPrompt = getFullPrompt(prompt);
   const completion = await generateCompletion({
@@ -56,9 +39,8 @@ export async function getScriptAndInfo({
     number: 1,
     key,
     model,
-    apiEndpoint,
   });
-  const iterableStream = fakeStreamFromCompletion(completion);
+  const iterableStream = streamToIterable(completion);
   return {
     readScript: readData(iterableStream, ...shellCodeExclusions),
     readInfo: readData(iterableStream, ...shellCodeExclusions),
@@ -70,39 +52,25 @@ export async function generateCompletion({
   number = 1,
   key,
   model,
-  apiEndpoint,
 }: {
-  prompt: string | ChatCompletionRequestMessage[];
+  prompt: string | ChatCompletionRequest[];
   number?: number;
   model?: string;
   key: string;
-  apiEndpoint: string;
 }) {
-  // const openAi = getOpenAi(key, apiEndpoint);
   const mistral = getMistralClient(key);
   try {
-    // const completion = await openAi.createChatCompletion(
-    //   {
-    //     model: model || 'gpt-4o-mini',
-    //     messages: Array.isArray(prompt)
-    //       ? prompt
-    //       : [{ role: 'user', content: prompt }],
-    //     n: Math.min(number, 10),
-    //     stream: true,
-    //   },
-    //   { responseType: 'stream' }
-    // );
 
     const completion = await mistral.chat.complete({
-      model: "mistral-small-latest",
-      stream: false,
+      model: model || "mistral-small-latest",
+      stream: false, // Get full response
       messages: Array.isArray(prompt)
-        ? prompt
-        : [{ role: 'user', content: prompt }],
+        ? prompt.flatMap(req => req.messages) // Flatten all messages from multiple requests
+        : [{ role: "user", content: String(prompt) }],
       n: Math.min(number, 10),
-    })
+    });
 
-    return completion;// as unknown as IncomingMessage;
+    return completion;
   } catch (err) {
     const error = err as AxiosError;
 
@@ -131,11 +99,9 @@ export async function generateCompletion({
     if (response?.status === 429) {
       throw new KnownError(
         dedent`
-        Request to OpenAI failed with status 429. This is due to incorrect billing setup or excessive quota usage. Please follow this guide to fix it: https://help.openai.com/en/articles/6891831-error-code-429-you-exceeded-your-current-quota-please-check-your-plan-and-billing-details
+        Request to Mistral failed with status 429. This is due to incorrect billing setup or excessive quota usage. Make sure to add a payment method if not under an active grant from Mistral.
 
-        You can activate billing here: https://platform.openai.com/account/billing/overview . Make sure to add a payment method if not under an active grant from OpenAI.
-
-        Full message from OpenAI:
+        Full message from Mistral:
       ` +
         '\n\n' +
         messageString +
@@ -144,7 +110,7 @@ export async function generateCompletion({
     } else if (response && message) {
       throw new KnownError(
         dedent`
-        Request to OpenAI failed with status ${response?.status}:
+        Request to Mistral failed with status ${response?.status}:
       ` +
         '\n\n' +
         messageString +
@@ -160,12 +126,10 @@ export async function getExplanation({
   script,
   key,
   model,
-  apiEndpoint,
 }: {
   script: string;
   key: string;
   model?: string;
-  apiEndpoint: string;
 }) {
   const prompt = getExplanationPrompt(script);
   const completion = await generateCompletion({
@@ -173,9 +137,8 @@ export async function getExplanation({
     key,
     number: 1,
     model,
-    apiEndpoint,
   });
-  const iterableStream = fakeStreamFromCompletion(completion);
+  const iterableStream = streamToIterable(completion);
   return { readExplanation: readData(iterableStream) };
 }
 
@@ -184,13 +147,11 @@ export async function getRevision({
   code,
   key,
   model,
-  apiEndpoint,
 }: {
   prompt: string;
   code: string;
   key: string;
   model?: string;
-  apiEndpoint: string;
 }) {
   const fullPrompt = getRevisionPrompt(prompt, code);
   const completion = await generateCompletion({
@@ -198,9 +159,8 @@ export async function getRevision({
     key,
     number: 1,
     model,
-    apiEndpoint,
   });
-  const iterableStream = fakeStreamFromCompletion(completion);
+  const iterableStream = streamToIterable(completion);
   return {
     readScript: readData(iterableStream, ...shellCodeExclusions),
   };
@@ -217,7 +177,6 @@ export const readData =
         let data = '';
         let content = '';
         let dataStart = false;
-        let buffer = ''; // This buffer will temporarily hold incoming data only for detecting the start
 
         const [excludedPrefix] = excluded;
         const stopTextStreamKeys = ['q', 'escape']; //Group of keys that stop the text stream
@@ -236,27 +195,20 @@ export const readData =
         for await (const chunk of iterableStream) {
           const payloads = chunk.toString().split('\n\n');
           for (const payload of payloads) {
-            if (payload.includes('[DONE]') || stopTextStream) {
+            if (stopTextStream) {
               dataStart = false;
               resolve(data);
               return;
             }
-
             if (payload.startsWith('data:')) {
               content = parseContent(payload);
-              // Use buffer only for start detection
+
               if (!dataStart) {
-                // Append content to the buffer
-                buffer += content;
-                if (buffer.match(excludedPrefix ?? '')) {
-                  dataStart = true;
-                  // Clear the buffer once it has served its purpose
-                  buffer = '';
-                  if (excludedPrefix) break;
-                }
+                dataStart = true;
               }
 
               if (dataStart && content) {
+                console.log("contentWithoutExcluded")
                 const contentWithoutExcluded = stripRegexPatterns(
                   content,
                   excluded
@@ -272,8 +224,7 @@ export const readData =
         function parseContent(payload: string): string {
           const data = payload.replaceAll(/(\n)?^data:\s*/g, '');
           try {
-            const delta = JSON.parse(data.trim());
-            return delta.choices?.[0]?.delta?.content ?? '';
+            return data ?? '';
           } catch (error) {
             return `Error with JSON.parse and ${payload}.\n${error}`;
           }
@@ -337,14 +288,4 @@ function getRevisionPrompt(prompt: string, code: string) {
 
     ${generationDetails}
   `;
-}
-
-export async function getModels(
-  key: string,
-  apiEndpoint: string
-): Promise<Model[]> {
-  const openAi = getOpenAi(key, apiEndpoint);
-  const response = await openAi.listModels();
-
-  return response.data.data.filter((model) => model.object === 'model');
 }

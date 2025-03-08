@@ -16,8 +16,7 @@
     "execa": "^7.1.1",
     "i18next": "^22.4.15",
     "ini": "^4.0.0",
-    "kolorist": "^1.7.0",
-    "openai": "^3.2.1"
+    "kolorist": "^1.7.0"
   },
   "repository": {
     "type": "git",

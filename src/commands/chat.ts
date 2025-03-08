@@ -3,9 +3,9 @@ import { spinner, intro, outro, text, isCancel } from '@clack/prompts';
 import { cyan, green } from 'kolorist';
 import { generateCompletion, readData } from '../helpers/completion';
 import { getConfig } from '../helpers/config';
-import { fakeStreamFromCompletion } from '../helpers/event-stream-to-iterable';
-import { ChatCompletionRequestMessage } from 'openai';
+import { streamToIterable } from '../helpers/event-stream-to-iterable';
 import i18n from '../helpers/i18n';
+import { ChatCompletionRequest } from '@mistralai/mistralai/models/components';
 
 export default command(
   {
@@ -17,11 +17,10 @@ export default command(
   },
   async () => {
     const {
-      OPENAI_KEY: key,
-      OPENAI_API_ENDPOINT: apiEndpoint,
+      MISTRAL_KEY: key,
       MODEL: model,
     } = await getConfig();
-    const chatHistory: ChatCompletionRequestMessage[] = [];
+    const chatHistory: ChatCompletionRequest[] = [];
 
     console.log('');
     intro(i18n.t('Starting new conversation'));
@@ -43,14 +42,18 @@ export default command(
       const infoSpin = spinner();
       infoSpin.start(i18n.t(`THINKING...`));
       chatHistory.push({
-        role: 'user',
-        content: userPrompt,
+        model: model,
+        messages: [
+          {
+            role: 'assistant',
+            content: userPrompt,
+          }
+        ],
       });
       const { readResponse } = await getResponse({
         prompt: chatHistory,
         key,
         model,
-        apiEndpoint,
       });
 
       infoSpin.stop(`${green('AI Shell:')}`);
@@ -59,8 +62,13 @@ export default command(
         process.stdout.write.bind(process.stdout)
       );
       chatHistory.push({
-        role: 'assistant',
-        content: fullResponse,
+        model: model,
+        messages: [
+          {
+            role: 'assistant',
+            content: fullResponse,
+          }
+        ],
       });
       console.log('');
       console.log('');
@@ -76,24 +84,20 @@ async function getResponse({
   number = 1,
   key,
   model,
-  apiEndpoint,
 }: {
-  prompt: string | ChatCompletionRequestMessage[];
+  prompt: string | ChatCompletionRequest[];
   number?: number;
   model?: string;
   key: string;
-  apiEndpoint: string;
 }) {
   const completion = await generateCompletion({
     prompt,
     key,
     model,
     number,
-    apiEndpoint,
   });
 
-  // const iterableStream = eventStreamToIterable(stream);
-  const iterableStream = fakeStreamFromCompletion(completion);
+  const iterableStream = streamToIterable(completion);
   return { readResponse: readData(iterableStream) };
 }
 

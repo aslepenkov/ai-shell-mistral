@@ -34,14 +34,14 @@
    npm install -g @builder.io/ai-shell
    ```
 
-2. 从 [OpenAI](https://platform.openai.com/account/api-keys) 获取您的 API 密钥
+2. 从 [Mistral](https://console.mistral.ai/api-keys) 获取您的 API 密钥
 
    > 注意：如果您还没有创建帐户并设置计费方式，您需要先进行这些步骤。
 
 3. 设置密钥以便 ai-shell 可以使用它：
 
    ```sh
-   ai config set OPENAI_KEY=<your token>
+   ai config set MISTRAL_KEY=<your token>
    ```
 
    这将在您的主目录中创建一个名为 `.ai-shell` 的文件。
@@ -129,13 +129,6 @@ ai -s 列出所有日志文件
 ai config set SILENT_MODE=true
 ```
 
-### 自定义 API 端点
-
-您可以自定义 OpenAI API 端点以设置 OPENAI_API_ENDPOINT（默认值为 `https://api.openai.com/v1`）。
-
-```sh
-ai config set OPENAI_API_ENDPOINT=<your proxy endpoint>
-```
 
 ### 设置语言
 
@@ -179,10 +172,8 @@ ai config
 
 ```bash
 ◆  Set config:
-│  ○ OpenAI Key
-│  ○ OpenAI API Endpoint
+│  ○ Mistral Key
 │  ○ Silent Mode
-│  ● Model (gpt-4o-mini)
 │  ○ Language
 │  ○ Cancel
 └
@@ -209,12 +200,6 @@ ai update
 ```
 
 ## 常见问题
-
-### 429 错误
-
-一些用户报告了来自 OpenAI 的 429 错误。这是由于错误的计费设置或过度使用配额所致。请按照[此指南](https://help.openai.com/en/articles/6891831-error-code-429-you-exceeded-your-current-quota-please-check-your-plan-and-billing-details)进行修复。
-
-您可以在[此链接](https://platform.openai.com/account/billing/overview)上激活计费。如果没有获得 OpenAI 的活动赠款，请确保添加支付方式。
 
 ## 动机
 
