@@ -31,7 +31,7 @@
 1. 安装 _ai shell_:
 
    ```sh
-   npm install -g @builder.io/ai-shell
+   npm install -g @aslepenkov/ai-shell-mistral
    ```
 
 2. 从 [Mistral](https://console.mistral.ai/api-keys) 获取您的 API 密钥

@@ -1,7 +1,7 @@
 {
   "name": "@aslepenkov/ai-shell-mistral",
   "description": "A CLI that converts natural language to shell commands. Mistral fork",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "dependencies": {
     "@clack/core": "latest",
