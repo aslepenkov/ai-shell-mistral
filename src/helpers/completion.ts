@@ -3,7 +3,6 @@ import { ChatCompletionRequest } from "@mistralai/mistralai/models/components";
 import dedent from 'dedent';
 import { IncomingMessage } from 'http';
 import { KnownError } from './error';
-import { streamToIterable } from './event-stream-to-iterable';
 import { detectShell } from './os-detect';
 import type { AxiosError } from 'axios';
 import { streamToString } from './stream-to-string';
@@ -11,6 +10,7 @@ import './replace-all-polyfill';
 import i18n from './i18n';
 import { stripRegexPatterns } from './strip-regex-patterns';
 import readline from 'readline';
+import { streamToIterable } from "./event-stream-to-iterable";
 
 const explainInSecondRequest = true;
 
@@ -208,7 +208,6 @@ export const readData =
               }
 
               if (dataStart && content) {
-                console.log("contentWithoutExcluded")
                 const contentWithoutExcluded = stripRegexPatterns(
                   content,
                   excluded
