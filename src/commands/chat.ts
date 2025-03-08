@@ -3,7 +3,7 @@ import { spinner, intro, outro, text, isCancel } from '@clack/prompts';
 import { cyan, green } from 'kolorist';
 import { generateCompletion, readData } from '../helpers/completion';
 import { getConfig } from '../helpers/config';
-import { streamToIterable } from '../helpers/stream-to-iterable';
+import { fakeStreamFromCompletion } from '../helpers/event-stream-to-iterable';
 import { ChatCompletionRequestMessage } from 'openai';
 import i18n from '../helpers/i18n';
 
@@ -84,7 +84,7 @@ async function getResponse({
   key: string;
   apiEndpoint: string;
 }) {
-  const stream = await generateCompletion({
+  const completion = await generateCompletion({
     prompt,
     key,
     model,
@@ -92,7 +92,8 @@ async function getResponse({
     apiEndpoint,
   });
 
-  const iterableStream = streamToIterable(stream);
-
+  // const iterableStream = eventStreamToIterable(stream);
+  const iterableStream = fakeStreamFromCompletion(completion);
   return { readResponse: readData(iterableStream) };
 }
+

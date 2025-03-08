@@ -74,15 +74,28 @@ const fileExists = (filePath: string) =>
     () => false
   );
 
+
+  
+const defaultConfig: RawConfig = {
+  OPENAI_KEY: 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // Dummy API key
+  MODEL: 'mistral-small-latest',
+  SILENT_MODE: 'false',
+  LANGUAGE: 'en',
+};
+
 const readConfigFile = async (): Promise<RawConfig> => {
   const configExists = await fileExists(configPath);
+
   if (!configExists) {
-    return Object.create(null);
+    console.log(`Config file not found. Creating default config at ${configPath}...`);
+    await fs.writeFile(configPath, ini.stringify(defaultConfig), 'utf8');
+    return defaultConfig;
   }
 
   const configString = await fs.readFile(configPath, 'utf8');
   return ini.parse(configString);
 };
+
 
 export const getConfig = async (
   cliConfig?: RawConfig
