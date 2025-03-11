@@ -200,22 +200,20 @@ export const readData =
               resolve(data);
               return;
             }
-            if (payload.startsWith('data:')) {
-              content = parseContent(payload);
+            content = parseContent(payload);
 
-              if (!dataStart) {
-                dataStart = true;
-              }
+            if (!dataStart) {
+              dataStart = true;
+            }
 
-              if (dataStart && content) {
-                const contentWithoutExcluded = stripRegexPatterns(
-                  content,
-                  excluded
-                );
+            if (dataStart && content) {
+              const contentWithoutExcluded = stripRegexPatterns(
+                content,
+                excluded
+              );
 
-                data += contentWithoutExcluded;
-                writer(contentWithoutExcluded);
-              }
+              data += contentWithoutExcluded;
+              writer(contentWithoutExcluded);
             }
           }
         }

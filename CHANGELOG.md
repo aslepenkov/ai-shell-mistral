@@ -1,3 +1,7 @@
+## 1.1.4
+
+- Fix chat, upd adaptation to Mistral
+
 ## 1.1.0
 
 - Move to Mistral API

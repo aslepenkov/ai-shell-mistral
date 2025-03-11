@@ -204,29 +204,3 @@ Or just use AI shell:
 ```bash
 ai update
 ```
-
-## Common Issues
-
-## Motivation
-
-I am not a bash wizard, and am dying for access to the copilot CLI, and got impatient.
-
-## Contributing
-
-If you want to help fix a bug or implement a feature in [Issues](https://github.com/BuilderIO/ai-shell/issues) (tip: look out for the `help wanted` label), checkout the [Contribution Guide](CONTRIBUTING.md) to learn how to setup the project.
-
-## Credit
-
-- Thanks to GitHub Copilot for their amazing tools and the idea for this.
-- Thanks to Hassan and his work on [aicommits](https://github.com/Nutlope/aicommits), which inspired the workflow and some parts of the code and flows
-
-<br><br>
-
-<p align="center">
-   <a href="https://www.builder.io/m/developers">
-      <picture>
-         <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/844291/230786554-eb225eeb-2f6b-4286-b8c2-535b1131744a.png">
-         <img width="250" alt="Made with love by Builder.io" src="https://user-images.githubusercontent.com/844291/230786555-a58479e4-75f3-4222-a6eb-74c5af953eac.png">
-       </picture>
-   </a>
-</p>

@@ -45,7 +45,7 @@ export default command(
         model: model,
         messages: [
           {
-            role: 'assistant',
+            role: 'user',
             content: userPrompt,
           }
         ],
