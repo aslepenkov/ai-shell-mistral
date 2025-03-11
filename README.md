@@ -9,16 +9,17 @@
    A CLI that converts natural language to shell commands.
 </h4>
 <p align="center">
-   <a href="https://www.npmjs.com/package/@builder.io/ai-shell"><img src="https://img.shields.io/npm/v/@builder.io/ai-shell" alt="Current version"></a>
+   <a href="https://www.npmjs.com/package/@aslepenkov/ai-shell-mistral"><img src="https://img.shields.io/npm/v/@aslepenkov/ai-shell-mistral" alt="Current version"></a>
 </p>
 
 <p align="center">
    <img alt="Gif Demo" src="https://user-images.githubusercontent.com/844291/230413167-773845e7-4c9f-44a5-909c-02802b5e49f6.gif" >
 <p>
-
+   
+# AI Shell (mistral-fork)
+   
 <p align="center">
-   # ai-shell-mistral-fork
-
+   
    ⚠️ **This is a fork of ai-shell-mistral by Builder.io.**  
    This project includes modifications for using Mistral  
 
@@ -28,8 +29,6 @@
 </p>
 
 <br>
-
-# AI Shell
 
 ## Setup
 
